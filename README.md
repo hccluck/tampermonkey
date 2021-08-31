@@ -13,4 +13,4 @@
 
 使用方法：打开油猴新建油猴脚本，复制 Juejin_Helper.js 内容到油猴编辑器内，打开掘金即可看到打开抽奖脚本弹窗的按钮。
 
-![](https://github.com/hccluck/tampermonkey/imgs/demo.jpg)
+![](./imgs/demo.jpg)
