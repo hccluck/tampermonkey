@@ -2,7 +2,7 @@
 // @name         掘金抽奖
 // @namespace    http://tampermonkey.net/
 // @version      1.1.0
-// @description  掘金抽奖 签到 免费抽奖 5连抽 10连抽
+// @description  掘金抽奖 签到 免费抽奖 5连抽 10连抽 可视化抽奖 petite-vue
 // @author       无仙
 // @match        https://juejin.cn/*
 // @icon         https://lf3-cdn-tos.bytescm.com/obj/static/xitu_juejin_web//static/favicons/favicon-32x32.png
@@ -77,7 +77,7 @@
     credentials: 'include'
   }).then((res) => res.json());
 
-  const award = res.data?.lottery?.map((item) => ({ ...item, times: 0 }));
+  const award = (res.data && res.data.lottery ? res.data.lottery : []).map((item) => ({ ...item, times: 0 }));
   const { free_count, point_cost } = res.data; // 剩余免费抽奖次数，单次抽奖消耗数
 
   document.body.appendChild(root); // 插入DOM
@@ -105,15 +105,18 @@
       this.popup = true;
     },
     async draw(times) {
-      if (this.loading) return;
+      if (this.loading || times === 0) return;
 
-      if (this.score < point_cost * (times || 1) && !(this.free_count && times === 1)) return alert('分都不够想啥呢？');
+      const is_not_free = !(this.free_count && times === 1);
+
+      if (is_not_free && this.score < point_cost * (times || 1)) return alert('分都不够想啥呢？');
 
       let i = 0;
       const drawFn = async () => {
-        if (this.score < point_cost || i === times) {
+        if (is_not_free && (this.score < point_cost || i === times)) {
           this.free_count = 0;
           this.loading = false;
+          this.open();
           console.log(`${times ? times + '连抽' : '梭哈'}结束！`);
           return;
         }
@@ -126,7 +129,15 @@
           credentials: 'include'
         }).then((res) => res.json());
 
+        if (result.err_no !== 0) {
+          console.log(result.err_msg);
+          this.loading = false;
+          this.open();
+          return;
+        }
+
         i++;
+        is_not_free && (this.score -= point_cost);
 
         if (result.data.lottery_type === 1) this.score += 66;
 
