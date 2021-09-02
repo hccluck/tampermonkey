@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         掘金抽奖
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.1.0
 // @description  掘金抽奖 签到 免费抽奖 5连抽 10连抽
 // @author       无仙
 // @match        https://juejin.cn/*
@@ -40,8 +40,8 @@
           <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <thead>
               <tr>
-                <th>奖品</th>
-                <th>奖品名</th>
+                <th>奖品图片</th>
+                <th>奖品名称</th>
                 <th>中奖次数</th>
               </tr>
             </thead>
@@ -107,11 +107,12 @@
     async draw(times) {
       if (this.loading) return;
 
-      if (this.score < point_cost * (times || 1)) return alert('分都不够想啥呢？');
+      if (this.score < point_cost * (times || 1) && !(this.free_count && times === 1)) return alert('分都不够想啥呢？');
 
       let i = 0;
       const drawFn = async () => {
         if (this.score < point_cost || i === times) {
+          this.free_count = 0;
           this.loading = false;
           console.log(`${times ? times + '连抽' : '梭哈'}结束！`);
           return;
