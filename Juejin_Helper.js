@@ -113,7 +113,7 @@
 
       let i = 0;
       const drawFn = async () => {
-        if (is_not_free && (this.score < point_cost || i === times)) {
+        if ((is_not_free && this.score < point_cost) || i === times) {
           this.free_count = 0;
           this.loading = false;
           this.open();
