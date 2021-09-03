@@ -104,10 +104,10 @@
 
       this.popup = true;
     },
-    async draw(times) {
+    async draw(times, is_not_free = ture) {
       if (this.loading || times === 0) return;
 
-      const is_not_free = !(this.free_count && times === 1);
+      // const is_not_free = !(this.free_count && times === 1);
 
       if (is_not_free && this.score < point_cost * (times || 1)) return alert('分都不够想啥呢？');
 
@@ -177,7 +177,7 @@
       }
 
       if (today_status.data) {
-        this.draw(this.free_count); // 免费抽奖
+        this.get_status(); // 免费抽奖
         return (this.check_status = true); // 已经签到
       }
 
@@ -198,7 +198,23 @@
 
       this.check_status = true;
       this.score = check_in.data.sum_point;
-      this.draw(this.free_count); // 免费抽奖
+      this.get_status(); // 免费抽奖
+    },
+    async get_status() {
+      // 查询是否有免费抽奖次数
+      const res = await fetch('https://api.juejin.cn/growth_api/v1/lottery_config/get', {
+        headers: {
+          cookie: document.cookie
+        },
+        method: 'GET',
+        credentials: 'include'
+      }).then((res) => res.json());
+
+      this.free_count = res.data.free_count;
+
+      if (res.data.free_count) { // 有免费抽奖次数
+        this.draw(res.data.free_count, false);
+      }
     }
   }).mount();
 
