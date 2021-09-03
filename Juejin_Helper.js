@@ -104,7 +104,7 @@
 
       this.popup = true;
     },
-    async draw(times, is_not_free = ture) {
+    async draw(times, is_not_free = true) {
       if (this.loading || times === 0) return;
 
       // const is_not_free = !(this.free_count && times === 1);
