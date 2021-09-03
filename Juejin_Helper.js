@@ -276,7 +276,7 @@
       padding: 0 16px;
       border-bottom: 1px solid #999;
       display: flex;
-      align-item: center;
+      align-items: center;
       justify-content: space-between;
       color: #000;
       font-weight: 400;
@@ -292,7 +292,7 @@
     }
     .wx_main .wx_options {
       display: flex;
-      align-item: center;
+      align-items: center;
       justify-content: space-between;
       margin-bottom: 8px;
     }
