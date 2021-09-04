@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         掘金抽奖
 // @namespace    http://tampermonkey.net/
-// @version      1.1.0
+// @version      1.2.5
 // @description  掘金抽奖 签到 免费抽奖 5连抽 10连抽 可视化抽奖 petite-vue
 // @author       无仙
 // @match        https://juejin.cn/*
@@ -30,8 +30,8 @@
 
         <div class="wx_body">
           <div class="wx_options">
-            <div @click="check_in" v-if="check_status === -1 || check_status === false">签到{{check_status === false ? '异常' : ''}}</div>
-            <div v-else>签到成功</div>
+            <div @click="check_in" v-if="check_status === -1 || check_status === false">签到</div>
+            <div @click="get_free" v-else>签到成功</div>
             <div @click="draw(5)">5连抽</div>
             <div @click="draw(10)">10连抽</div>
             <div @click="draw(undefined)">梭哈抽奖</div>
@@ -103,6 +103,8 @@
       this.score = res.data; // 当前分数
 
       this.popup = true;
+
+      (this.check_status === -1 || this.check_status === false) && this.get_status();
     },
     async draw(times, is_not_free = true) {
       if (this.loading || times === 0) return;
@@ -161,24 +163,9 @@
       }
     },
     async check_in() {
-      // 查询签到状态
-      const today_status = await fetch('https://api.juejin.cn/growth_api/v1/get_today_status', {
-        headers: {
-          cookie: document.cookie
-        },
-        method: 'GET',
-        credentials: 'include'
-      }).then((res) => res.json());
-
-      if (today_status.err_no !== 0) {
-        alert('签到失败！');
-        this.check_status = false;
+      if (this.check_status) {
+        this.get_free(); // 免费抽奖
         return;
-      }
-
-      if (today_status.data) {
-        this.get_status(); // 免费抽奖
-        return (this.check_status = true); // 已经签到
       }
 
       // 签到
@@ -198,9 +185,21 @@
 
       this.check_status = true;
       this.score = check_in.data.sum_point;
-      this.get_status(); // 免费抽奖
+      this.get_free(); // 免费抽奖
     },
     async get_status() {
+      // 查询签到状态
+      const today_status = await fetch('https://api.juejin.cn/growth_api/v1/get_today_status', {
+        headers: {
+          cookie: document.cookie
+        },
+        method: 'GET',
+        credentials: 'include'
+      }).then((res) => res.json());
+
+      this.check_status = today_status.data;
+    },
+    async get_free() {
       // 查询是否有免费抽奖次数
       const res = await fetch('https://api.juejin.cn/growth_api/v1/lottery_config/get', {
         headers: {
@@ -212,7 +211,8 @@
 
       this.free_count = res.data.free_count;
 
-      if (res.data.free_count) { // 有免费抽奖次数
+      if (res.data.free_count) {
+        // 有免费抽奖次数
         this.draw(res.data.free_count, false);
       }
     }
@@ -283,7 +283,7 @@
     }
     .wx_score {
       font-size: 12px;
-      font-size: #666;
+      font-size: #00a100;
     }
     .wx_main .wx_body {
       padding: 16px;
@@ -302,7 +302,7 @@
       height: 24px;
       line-height: 24px;
       background-color: rgb(232, 243, 255);
-      border: 1px solid rgb(232, 243, 255);
+      border: 1px solid #c9d4e3;
       color: rgb(30, 128, 255);
       cursor: pointer;
       border-radius: 2px;
@@ -342,7 +342,7 @@
       height: 20px;
       line-height: 20px;
       background-color: rgb(232, 243, 255);
-      border: 1px solid rgb(232, 243, 255);
+      border: 1px solid #c9d4e3;
       color: rgb(30, 128, 255);
       border-radius: 2px;
     }
