@@ -17,4 +17,4 @@
 
 脚本预览：
 
-![](./imgs/demo.png)
+![demo.png](./imgs/demo.png)
