@@ -104,7 +104,7 @@
 
       this.popup = true;
 
-      (this.check_status === -1 || this.check_status === false) && this.get_status();
+      if (this.check_status === -1 || this.check_status === false) this.get_status();
     },
     async draw(times, is_not_free = true) {
       if (this.loading || times === 0) return;
@@ -139,7 +139,7 @@
         }
 
         i++;
-        is_not_free && (this.score -= point_cost);
+        if (is_not_free) this.score -= point_cost;
 
         if (result.data.lottery_type === 1) this.score += 66;
 
