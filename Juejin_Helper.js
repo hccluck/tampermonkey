@@ -219,9 +219,10 @@
   }).mount();
 
   function style(tmpl, ...values) {
-    let stl = tmpl[0];
-    for (let i = 1; i < tmpl.length; i++) {
-      stl += values[i - 1] + tmpl[i];
+    let stl = '';
+    for (let i = 0, l = tmpl.length; i < l; i++) {
+      stl += tmpl[i];
+      if (i < values.length) stl += values[i];
     }
 
     const styleEl = document.createElement('style');
