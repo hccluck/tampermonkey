@@ -218,8 +218,18 @@
     }
   }).mount();
 
+  function style(tmpl, ...values) {
+    let stl = tmpl[0];
+    for (let i = 1; i < tmpl.length; i++) {
+      stl += values[i - 1] + tmpl[i];
+    }
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = stl;
+    document.head.appendChild(styleEl);
+  }
   // 处理样式
-  const style = `
+  style`
     .wx_draw_wrap {
       box-sizing: border-box;
       position: fixed;
@@ -396,8 +406,4 @@
       }
     }
   `;
-
-  const styleEl = document.createElement('style');
-  styleEl.textContent = style;
-  document.head.appendChild(styleEl);
 })();
